@@ -34,9 +34,9 @@ app.post("/api/register", async (req, res) => {
         lastName: req.body.lastName,
         email: req.body.email,
         password: req.body.password,
-        profilePicture:'empty',
-        coverPicture:'empty',
-        gender:'M',
+        profilePicture: 'empty',
+        coverPicture: 'empty',
+        gender: 'M',
       });
       res.json({ status: "userRegistered" });
     } else {
@@ -145,10 +145,18 @@ app.get("/api/getPosts", async (req, res) => {
 });
 
 app.post("/api/likePost", async (req, res) => {
-  
+  const token = req.body.token;
+  const likeCount = req.body.likeCount;
   try {
-    const user = await Post.findOne({ _id: req.body._id });
-    await user.updateOne({ likeCount: req.body.likeCount });
+    const decoded = jwt.verify(token, "secret123");
+    const email = decoded.email;
+
+    const post = await Post.findOne({ _id: req.body._id });
+
+    if (likeCount) await post.updateOne({ $push: { likedBy: email } });
+    else await post.updateOne({ $pull: { likedBy: email } });
+
+    await post.updateOne({ likeCount: likeCount });
     res.json({ status: "LikeCountIncreased" });
   } catch (error) {
     res.json({ status: "Error", error });
