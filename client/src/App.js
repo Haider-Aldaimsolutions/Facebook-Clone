@@ -9,6 +9,7 @@ import { Box } from '@mui/system';
 import './styles.css'
 import Feed from './screens/Feed';
 import Menu from './screens/Menu';
+import Friends from './screens/Friends';
 export default function app() {
 
   return (
@@ -18,6 +19,7 @@ export default function app() {
         <Route exact path="/sign-up" element={<SignUP />} />
         <Route exact path="/login" element={<Login />} />
         <Route exact path="/" element={<Feed />} />
+        <Route exact path="/friends" element={<Friends />} />
         <Route exact path="/profile" element={<Profile />} />
         <Route exact path="/menu" element={<Menu />} />
       </Routes>

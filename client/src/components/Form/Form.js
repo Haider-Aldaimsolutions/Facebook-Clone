@@ -1,5 +1,5 @@
 import React, { useState,  } from 'react';
-import { TextField,Box,Stack,Link,Card,ListItemButton, Avatar,Button,Modal,Grid,Model, Typography, Paper, Divider } from '@mui/material';
+import { Tooltip,TextField,Box,Stack,Link,Card,ListItemButton, Avatar,Button,Modal,Grid,Model, Typography, Paper, Divider } from '@mui/material';
 import FileBase from 'react-file-base64';
 import LinearScaleIcon from '@mui/icons-material/LinearScale';
 import VideoCameraFrontIcon from '@mui/icons-material/VideoCameraFront';
@@ -53,6 +53,7 @@ function ChildModal() {
 
 const Form = ({ currentId=0, setCurrentId }) => {
   const [open, setOpen] = React.useState(false);
+  const [placeholder,setPlaceholder]=React.useState("What's on your mind, Jano "+localStorage.getItem('userName')+'?');
   const handleOpen = () => {
     setOpen(true);
   };
@@ -95,8 +96,8 @@ const Form = ({ currentId=0, setCurrentId }) => {
     <Box sx={{alignItems:"center" ,display:'flex',flexDirection:'column',justifyContent:'center'}}>  
     <Card sx={{backgroundColor:'white',width:'100%',mb:2,p:1.5,borderRadius:'10px'}}>
     <Box sx={{flexDirection:'row',display:'flex',mb:1.5}}>
-    <Avatar>H</Avatar>  
-    <Button onClick={handleOpen} className='inputBtn' sx={{ paddingRight:{md:'20%',sm:'15%',xs:'0'}}} >What's on your mind, Haider?</Button>
+    <Tooltip title="Upload"><Avatar className='avatar' src={localStorage.getItem('profilePicture')} onClick={()=>setOpen(true)} >H</Avatar></Tooltip>
+    <Button onClick={handleOpen} className='inputBtn' sx={{ paddingRight:{md:'20%',sm:'15%',xs:'0'}}} >{placeholder}</Button>
     </Box>
     <Divider/>
 
@@ -134,7 +135,7 @@ const Form = ({ currentId=0, setCurrentId }) => {
         </ListItemButton> 
 
         <form  autoComplete="off" noValidate className='root' onSubmit={handleSubmit}>
-        <TextField name="message" placeholder='Whats on your mind, Haider?' className='searchBar'  variant="standard"  fullWidth multiline minRows={4} value={postData.message} onChange={(e) => setPostData({ ...postData, message: e.target.value })} />
+        <TextField name="message" placeholder={placeholder} className='searchBar'  variant="standard"  fullWidth multiline minRows={4} value={postData.message} onChange={(e) => setPostData({ ...postData, message: e.target.value })} />
         <TextField name="tags" variant="standard"  placeholder="Tags (coma separated)" sx={{mt:3}} value={postData.tags} onChange={(e) => setPostData({ ...postData, tags: e.target.value.split(',') })} /> 
         <Box sx={{justifyContent:'row',display:'flex',mt:1,}}>
           <PhotoLibraryIcon  sx={{mr:1,fontSize:'xx-large',color:'green'}}/>

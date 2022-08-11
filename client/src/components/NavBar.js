@@ -49,10 +49,10 @@ function NavBar() {
     gap:5,
   });
   const menuItems=[
-    {Name:<HomeOutlinedIcon className='menuButtons'/>,Link:'/'},
-    {Name:<SubscriptionsOutlinedIcon className='menuButtons'/>,Link:'/products'},
-    {Name:<StorefrontIcon className='menuButtons'/>,Link:'/protfolio'},
-    {Name:<GroupsOutlinedIcon className='menuButtons'/>,Link:'/blog'},
+    {Name:<HomeOutlinedIcon className='menuButtons'/>,Link:'#'},
+    {Name:<SubscriptionsOutlinedIcon className='menuButtons'/>,Link:'#'},
+    {Name:<StorefrontIcon className='menuButtons'/>,Link:'#'},
+    {Name:<GroupsOutlinedIcon className='menuButtons'/>,Link:'/friends'},
     // {Name:<SportsEsportsOutlinedIcon className='menuButtons'/>,Link:'/contact-us'},
     // {Name:<MenuRoundedIcon className='menuButtons'/>,Link:'/contact-us'},
 
@@ -106,8 +106,8 @@ function NavBar() {
 
         <MenuBox  sx={{gap:{xs:'4vh',sm:'7vh',md:'15vh'}}} >
           {menuItems.map((item)=>(
-           <StyledItems >
-           <Link to={item.Link} >{item.Name}</Link>
+           <StyledItems onClick={()=>window.location.href=item.Link} >
+           <Link>{item.Name}</Link>
            </StyledItems>
           ))}
           <MenuRoundedIcon className='menuButtons' onClick={()=>goToMenu()} sx={{display:{md:'none'}}}/>
@@ -118,7 +118,7 @@ function NavBar() {
           <IconButton><Tooltip title="Games"><SportsEsportsOutlinedIcon className='leftButtons'/></Tooltip></IconButton>
           <IconButton><Tooltip title="Messenger"><SendRoundedIcon className='leftButtons'/></Tooltip></IconButton>
           <IconButton><Tooltip title="Notifications"><NotificationsIcon className='leftButtons'/></Tooltip></IconButton>
-          <Tooltip title="Account"><Avatar className='avatar' onClick={()=>setOpen(true)} >H</Avatar></Tooltip>
+          <Tooltip title="Account"><Avatar className='avatar' src={localStorage.getItem('profilePicture')} onClick={()=>setOpen(true)} >H</Avatar></Tooltip>
           
           {/* <IconButton><Tooltip title="Logout"><LogoutIcon onClick={()=>onLogout() } className='leftButtons'/></Tooltip></IconButton> */}
         </SocialBox>

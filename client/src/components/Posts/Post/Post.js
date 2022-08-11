@@ -7,10 +7,12 @@ import moment from 'moment';
 
 const Post = ({ post, setCurrentId, name }) => {
   const [liked, setLiked] = useState(false);
+  const [disable, setDisable] = useState(false);
   const [token, setToken] = useState(localStorage.getItem('token'));
   async function likePost(_id, likeCount) {
-    if (liked) likeCount -= 1
-    else likeCount += 1
+    setDisable(true);
+    if (liked) likeCount =likeCount-1
+    else likeCount =likeCount+1
     const req = await fetch("http://localhost:1337/api/likePost", {
       method: 'POST',
       headers: {
@@ -25,6 +27,7 @@ const Post = ({ post, setCurrentId, name }) => {
     const data = await req.json();
     console.log(data);
     setLiked(!liked);
+    setDisable(false);
   }
 
   async function deletePost(_id) {
@@ -49,7 +52,6 @@ const Post = ({ post, setCurrentId, name }) => {
     // localStorage.setItem('_id',post._id)
     window.location.href = "/profile";
   }
-
   return (
     post ?
       <Card className="card" >
@@ -71,7 +73,7 @@ const Post = ({ post, setCurrentId, name }) => {
           <Typography variant="body2" color="textSecondary" component="p">{post.message}</Typography>
         </CardContent>
         <CardActions className='cardActions'>
-          <Button size="small" color="primary" onClick={() => likePost(post._id, post.likeCount)}><ThumbUpIcon color={liked ? 'primary' : 'disabled'} fontSize="small" /> Like {post.likeCount} </Button>
+          <Button size="small" color="primary" disabled={disable?true:false} onClick={() => likePost(post._id, post.likeCount)}><ThumbUpIcon color={liked ? 'primary' : 'disabled'} fontSize="small" /> Like {post.likeCount} </Button>
           <Button size="small" color="primary" onClick={() => deletePost(post._id)}><DeleteIcon fontSize="small" /> Delete</Button>
         </CardActions>
       </Card>

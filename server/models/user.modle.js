@@ -9,7 +9,9 @@ const User =  mongoose.Schema(
         bio: { type: String},
         profilePicture:{ type: String},
         coverPicture:{ type: String},
-        gender:{ type: String}
+        gender:{ type: String},
+        friends:{ type: Array },
+        friendRequests:{ type: Array },
     },
     { collection: 'Memories-Auth' }
 

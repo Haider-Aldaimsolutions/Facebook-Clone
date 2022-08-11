@@ -60,7 +60,7 @@ app.post("/api/login", async (req, res) => {
       },
       "secret123"
     );
-    res.json({ status: "ok", user: token });
+    res.json({ status: "ok", token: token,name:user.firstName,profilePicture:user.profilePicture });
   } else {
     res.json({ status: "error", user: false });
   }
@@ -132,7 +132,6 @@ app.get("/api/getPosts", async (req, res) => {
       element.name = owner.firstName + " " + owner.lastName;
       cart.push(element.name);
     }
-    // console.log('posts',cart);
     return await res.json({
       status: "ok",
       posts: user,
@@ -150,10 +149,9 @@ app.post("/api/likePost", async (req, res) => {
   try {
     const decoded = jwt.verify(token, "secret123");
     const email = decoded.email;
-
     const post = await Post.findOne({ _id: req.body._id });
-
-    if (likeCount) await post.updateOne({ $push: { likedBy: email } });
+    
+    if (likeCount-post.likeCount==1) await post.updateOne({ $push: { likedBy: email } });
     else await post.updateOne({ $pull: { likedBy: email } });
 
     await post.updateOne({ likeCount: likeCount });
@@ -210,6 +208,41 @@ app.post("/api/setProfilePicture", async (req, res) => {
     res.json({ status: "Error", error });
   }
 });
+
+app.get("/api/getAllProfiles", async (req, res) => {
+  const requesterToken = req.headers["x-access-token"];
+  try {
+    const decoded = jwt.verify(requesterToken, "secret123");
+    const email = decoded.email;
+    
+    const user = await User.find({ email: { $nin: [email] } });
+    return await res.json({
+      status: "ok",
+      profiles: user,
+    });
+  } catch (error) {
+    console.log(error);
+    res.json({ status: "error", error: "invalid token" });
+  }
+});
+
+
+app.post("/api/addFriend", async (req, res) => {
+  const sendertoken = req.body.sendertoken;
+  const recevierEmail=req.body.recevierEmail;
+  try {
+    const decoded = jwt.verify(sendertoken, "secret123");
+    const senderEmail = decoded.email;
+    const recevier = await User.findOne({email: recevierEmail });
+    
+    await recevier.updateOne({ $push: { friendRequests: senderEmail } });
+    res.json({ status: "Request Sent" });
+  } catch (error) {
+    res.json({ status: "Error", error });
+  }
+});
+
+
 
 
 app.listen(1337, () => {

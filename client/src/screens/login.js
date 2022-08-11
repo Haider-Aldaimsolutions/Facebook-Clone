@@ -48,17 +48,18 @@ export default function Login() {
             })
             const data = await response.json()
             console.log(data);
-            if(!data.user)
+            if(!data.token)
                 {alert('Email or Password is Incorrect')}
             else
             {   
             alert('Welcome To Dashboard!')
-            localStorage.setItem('token',data.user)
+            localStorage.setItem('token',data.token)
+            localStorage.setItem('userName',data.name)
+            localStorage.setItem('profilePicture',data.profilePicture)
             window.location.href='/'
             }
         }
         else { alert("Please Fill all the fields") }
-
     };
 
     return (
