@@ -14,6 +14,7 @@ import YouTubeIcon from '@mui/icons-material/YouTube';
 import VideoCameraFrontIcon from '@mui/icons-material/VideoCameraFront';
 import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
 import LinearScaleIcon from '@mui/icons-material/LinearScale';
+import FriendRequests from './FriendRequests';
 
 export default function SocialMenu() {
   const StyledItems = styled(Typography)({
@@ -33,35 +34,10 @@ export default function SocialMenu() {
     { Name: <PeopleIcon className='' />, text: 'Kareem', Link: '/' },
   ];
   return (
-    <Box sx={{ width: '100%', bgcolor: 'inheret', position: 'fixed', left: { md: '78%', sm: '70%' } }}>
+    <Box sx={{ width: '100%', bgcolor: 'inheret', left: { md: '78%', sm: '70%' } }}>
+      <List sx={{ width: { md: '21.5%', sm: '25%' }, bgcolor: 'inheret', m: 0, p: 0 }}>
 
-      <List sx={{ width: { md: '21.5%', sm: '25%' }, bgcolor: 'inheret', position: 'fixed', m: 0, p: 0 }}>
-
-        <Box className='friendRequests'>
-          <Box sx={{ flexDirection: 'row', display: 'flex', justifyContent: 'space-between' }}>
-            <Typography sx={{ color: 'gray', fontWeight: 900, mb: 1 }}>Friend requests</Typography>
-            <Link href="#" underline="none">see all</Link>
-          </Box>
-          <ListItemButton sx={{ p: 1, m: 0, borderRadius: 3, flexDirection: 'column', alignItems: 'flex-start' }} >
-            <Box sx={{ flexDirection: 'row', display: 'flex' }}>
-              <Avatar alt="Remy Sharp"
-                src="/static/images/avatar/1.jpg"
-                sx={{ width: 60, height: 60 }}>B
-              </Avatar>
-              <Box sx={{ width: { md: '200px', xs: '180px' }, ml: '3%', }}>
-                <Typography sx={{ color: 'gray', fontWeight: 900, mt: '3%' }}>Boota Tehseem</Typography>
-                <Typography sx={{ color: 'gray', fontSize: '13px', fontWeight: 200, mt: '3%' }}>12 mutual friends</Typography>
-              </Box>
-
-            </Box>
-            <Box sx={{ justifyContent: 'space-between', flexDirection: { md: "row", sm: 'column' }, display: 'flex', my: 1 }} spacing={2} >
-              <Button variant="contained" sx={{ fontWeight: 900, px: 3, m: 0.4, borderRadius: 2 }}>Confirm</Button>
-              <Button sx={{ fontWeight: 900, color: 'black', px: 3, m: 0.4, backgroundColor: '#ddd', borderRadius: 2 }}>Delete</Button>
-            </Box>
-          </ListItemButton>
-        </Box>
-
-        <Divider />
+        <FriendRequests />
 
         <Box className='birthdayNotifications'>
           <Typography sx={{ color: 'gray', fontWeight: 900, my: 1 }}>Birthdays</Typography>

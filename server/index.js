@@ -60,7 +60,7 @@ app.post("/api/login", async (req, res) => {
       },
       "secret123"
     );
-    res.json({ status: "ok", token: token,name:user.firstName,profilePicture:user.profilePicture });
+    res.json({ status: "ok", token: token, name: user.firstName, profilePicture: user.profilePicture });
   } else {
     res.json({ status: "error", user: false });
   }
@@ -150,8 +150,8 @@ app.post("/api/likePost", async (req, res) => {
     const decoded = jwt.verify(token, "secret123");
     const email = decoded.email;
     const post = await Post.findOne({ _id: req.body._id });
-    
-    if (likeCount-post.likeCount==1) await post.updateOne({ $push: { likedBy: email } });
+
+    if (likeCount - post.likeCount == 1) await post.updateOne({ $push: { likedBy: email } });
     else await post.updateOne({ $pull: { likedBy: email } });
 
     await post.updateOne({ likeCount: likeCount });
@@ -214,11 +214,13 @@ app.get("/api/getAllProfiles", async (req, res) => {
   try {
     const decoded = jwt.verify(requesterToken, "secret123");
     const email = decoded.email;
-    
+
     const user = await User.find({ email: { $nin: [email] } });
+    const friendStatus = await User.find({ friendRequests: email });
     return await res.json({
       status: "ok",
       profiles: user,
+      friendStatus: friendStatus,
     });
   } catch (error) {
     console.log(error);
@@ -229,16 +231,50 @@ app.get("/api/getAllProfiles", async (req, res) => {
 
 app.post("/api/addFriend", async (req, res) => {
   const sendertoken = req.body.sendertoken;
-  const recevierEmail=req.body.recevierEmail;
+  const recevierEmail = req.body.recevierEmail;
   try {
     const decoded = jwt.verify(sendertoken, "secret123");
     const senderEmail = decoded.email;
-    const recevier = await User.findOne({email: recevierEmail });
-    
+    const recevier = await User.findOne({ email: recevierEmail });
+
     await recevier.updateOne({ $push: { friendRequests: senderEmail } });
     res.json({ status: "Request Sent" });
   } catch (error) {
     res.json({ status: "Error", error });
+  }
+});
+
+app.get("/api/getAllRequests", async (req, res) => {
+  const requesterToken = req.headers["x-access-token"];
+  try {
+    var element = {},
+      cart = [];
+
+    const decoded = jwt.verify(requesterToken, "secret123");
+    const email = decoded.email;
+
+    // const user = await User.find({ email: { $nin: [email] } });
+    const user = await User.findOne({ email: email });
+    console.log(user.friendRequests);
+    let requesterProfile = [];
+    for (let index = 0; index < user.friendRequests.length; index++) {
+      const profile = await User.findOne({
+        email: user.friendRequests[index],
+
+      });
+      requesterProfile.push(profile);
+
+    }
+    console.log(requesterProfile);
+
+    return await res.json({
+      status: "ok",
+      friendRequesters: user.friendRequests,
+      requesterProfile: requesterProfile,
+    });
+  } catch (error) {
+    console.log(error);
+    res.json({ status: "error", error: "invalid token" });
   }
 });
 
