@@ -24,10 +24,8 @@ mongoose.connect("mongodb://localhost:27017/memories");
 
 app.post("/api/register", async (req, res) => {
   try {
-    const user = await User.findOne({
-      email: req.body.email,
-    });
-    console.log("Email exists:");
+    const user = await User.findOne({email: req.body.email});
+    
     if (!user) {
       await User.create({
         firstName: req.body.firstName,
@@ -36,13 +34,16 @@ app.post("/api/register", async (req, res) => {
         password: req.body.password,
         profilePicture: 'empty',
         coverPicture: 'empty',
-        gender: 'M',
+        gender: 'M/F',
+
       });
       res.json({ status: "userRegistered" });
     } else {
+      console.log("Email exists:");
       res.send({ status: "emailExists" });
     }
   } catch (error) {
+    console.log(error);
     res.json({ status: "Error", error });
   }
 });
@@ -60,7 +61,7 @@ app.post("/api/login", async (req, res) => {
       },
       "secret123"
     );
-    res.json({ status: "ok", token: token, name: user.firstName, profilePicture: user.profilePicture });
+    res.json({ status: "ok", token: token, firstName: user.firstName,lastName: user.lastName, profilePicture: user.profilePicture,email:user.email,createdAt:user.createdAt });
   } else {
     res.json({ status: "error", user: false });
   }
@@ -122,20 +123,29 @@ app.post("/api/createPost", async (req, res) => {
 
 app.get("/api/getPosts", async (req, res) => {
   try {
-    var element = {},
-      cart = [];
+    var nameElement = {},
+    namesCart = [];
+    var pictureElement = {},
+    pictureCart = [];  
+    
     const user = await Post.find();
     for (let index = 0; index < user.length; index++) {
       const owner = await User.findOne({
         email: user[index].email,
       });
-      element.name = owner.firstName + " " + owner.lastName;
-      cart.push(element.name);
+      nameElement.name = owner.firstName + " " + owner.lastName;
+      namesCart.push(nameElement.name);
+
+      pictureElement.profilePicture = owner.profilePicture;
+      pictureCart.push(pictureElement.profilePicture);
+      
     }
     return await res.json({
       status: "ok",
       posts: user,
-      names: cart,
+      names: namesCart,
+      profilePicture:pictureCart,
+
     });
   } catch (error) {
     console.log(error);
@@ -211,16 +221,39 @@ app.post("/api/setProfilePicture", async (req, res) => {
 
 app.get("/api/getAllProfiles", async (req, res) => {
   const requesterToken = req.headers["x-access-token"];
+  let friendStatus = [];
+  let dummyUser;
   try {
     const decoded = jwt.verify(requesterToken, "secret123");
     const email = decoded.email;
 
-    const user = await User.find({ email: { $nin: [email] } });
-    const friendStatus = await User.find({ friendRequests: email });
+    const requester=await User.findOne({email:email});
+
+      
+      //hard coded for now
+      dummyUser = await User.find({ email: { $nin: [email,requester.friendRequests[0],requester.friendRequests[1],requester.friendRequests[2],requester.friendRequests[3] ] } }); 
+      const user =dummyUser
+
+      for (let index = 0; index < user.length; index++) {
+      const currentUser=await User.findOne({ email:user[index].email });
+      for(let i = 0; i <currentUser.friendRequests.length; i++){
+        if(requester.friends[i]==email) friendStatus.push('Friends');
+        else if(currentUser.friendRequests[i]==currentUser.email) {friendStatus.push('Requested');}
+        else {friendStatus.push('Add Friend');}
+      }
+      
+      if(currentUser.friendRequests.length==0){
+        if(requester.friends[index]==currentUser.email) friendStatus.push('Friends');
+        else
+        friendStatus.push('Add Friend');
+      }  
+    }
     return await res.json({
       status: "ok",
       profiles: user,
       friendStatus: friendStatus,
+      requester:requester,
+
     });
   } catch (error) {
     console.log(error);
@@ -236,36 +269,124 @@ app.post("/api/addFriend", async (req, res) => {
     const decoded = jwt.verify(sendertoken, "secret123");
     const senderEmail = decoded.email;
     const recevier = await User.findOne({ email: recevierEmail });
-
+    
     await recevier.updateOne({ $push: { friendRequests: senderEmail } });
+
+    //to add data in Requested array
+    const requester=await User.findOne({ email: senderEmail });
+    await requester.updateOne({ $push: { friendRequested: recevierEmail } });
+
     res.json({ status: "Request Sent" });
   } catch (error) {
     res.json({ status: "Error", error });
   }
 });
 
+
+app.post("/api/cancelRequest", async (req, res) => {
+  const sendertoken = req.body.sendertoken;
+  const recevierEmail = req.body.recevierEmail;
+  try {
+    const decoded = jwt.verify(sendertoken, "secret123");
+    const senderEmail = decoded.email;
+    const recevier = await User.findOne({ email: recevierEmail });
+    
+    const request=await recevier.updateOne({ $pull: { friendRequests: senderEmail } });
+    //to add data in Requested array
+    const requester=await User.findOne({ email: senderEmail });
+    await requester.updateOne({ $pull: { friendRequested: recevierEmail } });
+    res.json({ status: "Request canceled" });
+  } catch (error) {
+    res.json({ status: "Error", error });
+  }
+});
+
+app.post("/api/confirmRequest", async (req, res) => {
+  const sendertoken = req.body.sendertoken;
+  const recevierEmail = req.body.recevierEmail;
+  try {
+    const decoded = jwt.verify(sendertoken, "secret123");
+    const senderEmail = decoded.email;
+
+    const recevier = await User.findOne({ email: recevierEmail });
+    const sender = await User.findOne({ email: senderEmail });
+    
+    await recevier.updateOne({ $push: { friends: senderEmail } });
+    await sender.updateOne({ $push: { friends: recevierEmail } });
+
+    //to add data in Requested array
+    await recevier.updateOne({ $pull: { friendRequested: senderEmail,friendRequests: recevierEmail } });
+    await sender.updateOne({ $pull: { friendRequested: senderEmail,friendRequests: recevierEmail } });
+
+    res.json({ status: "Request Sent" });
+  } catch (error) {
+    res.json({ status: "Error", error });
+  }
+});
+
+
+app.post("/api/deleteRequest", async (req, res) => {
+  const sendertoken = req.body.sendertoken;
+  const recevierEmail = req.body.recevierEmail;
+  try {
+    const decoded = jwt.verify(sendertoken, "secret123");
+    const senderEmail = decoded.email;
+
+    const recevier = await User.findOne({ email: recevierEmail });
+    const sender = await User.findOne({ email: senderEmail });
+    
+    // await recevier.updateOne({ $push: { friends: senderEmail } });
+    // await sender.updateOne({ $push: { friends: recevierEmail } });
+
+    //to add data in Requested array
+    await recevier.updateOne({ $pull: { friendRequested: senderEmail,friendRequests: recevierEmail } });
+    await sender.updateOne({ $pull: { friendRequested: senderEmail,friendRequests: recevierEmail } });
+
+    res.json({ status: "Request Deleted" });
+  } catch (error) {
+    res.json({ status: "Error", error });
+  }
+});
+
+app.post("/api/removeFriend", async (req, res) => {
+  const sendertoken = req.body.sendertoken;
+  const recevierEmail = req.body.recevierEmail;
+  try {
+    const decoded = jwt.verify(sendertoken, "secret123");
+    const senderEmail = decoded.email;
+
+    const recevier = await User.findOne({ email: recevierEmail });
+    const sender = await User.findOne({ email: senderEmail });
+    
+    await recevier.updateOne({ $pull: { friends: senderEmail } });
+    await sender.updateOne({ $pull: { friends: recevierEmail } });
+
+    res.json({ status: "Request Sent" });
+  } catch (error) {
+    res.json({ status: "Error", error });
+  }
+});
+
+
 app.get("/api/getAllRequests", async (req, res) => {
   const requesterToken = req.headers["x-access-token"];
   try {
-    var element = {},
-      cart = [];
-
     const decoded = jwt.verify(requesterToken, "secret123");
     const email = decoded.email;
 
     // const user = await User.find({ email: { $nin: [email] } });
     const user = await User.findOne({ email: email });
-    console.log(user.friendRequests);
+    // console.log(user.friendRequests);
     let requesterProfile = [];
     for (let index = 0; index < user.friendRequests.length; index++) {
-      const profile = await User.findOne({
-        email: user.friendRequests[index],
-
-      });
+      
+      if(user.friendRequests[index]!=email){
+      const profile = await User.findOne({email: user.friendRequests[index]});
       requesterProfile.push(profile);
+      }
 
     }
-    console.log(requesterProfile);
+    // console.log(requesterProfile);
 
     return await res.json({
       status: "ok",

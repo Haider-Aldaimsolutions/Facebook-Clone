@@ -1,10 +1,7 @@
 import * as React from 'react';
 import { AppBar, IconButton, Box, Toolbar, Avatar, styled, Typography, Button, Stack, MenuItem, Menu, InputBase, Divider, CssBaseline, Link, Tooltip, } from '@mui/material';
 import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
 import InboxIcon from '@mui/icons-material/Inbox';
 import DraftsIcon from '@mui/icons-material/Drafts';
 import PeopleIcon from '@mui/icons-material/People';
@@ -32,16 +29,15 @@ export default function SocialMenu() {
     { Name: <PeopleIcon className='' />, text: 'Sehar', Link: '/' },
     { Name: <PeopleIcon className='' />, text: 'Nasir Ali', Link: '/' },
     { Name: <PeopleIcon className='' />, text: 'Kareem', Link: '/' },
+    
   ];
   return (
-    <Box sx={{ width: '100%', bgcolor: 'inheret', left: { md: '78%', sm: '70%' } }}>
-      <List sx={{ width: { md: '21.5%', sm: '25%' }, bgcolor: 'inheret', m: 0, p: 0 }}>
-
+    <Box sx={{ display: {sm:'flex',xs:'none'},width: '100%', bgcolor: 'inheret'}}>
+      <List sx={{ bgcolor: 'inheret', m: 0, p: 0 }}>
         <FriendRequests />
-
         <Box className='birthdayNotifications'>
           <Typography sx={{ color: 'gray', fontWeight: 900, my: 1 }}>Birthdays</Typography>
-          <ListItemButton sx={{ p: 1, m: 0, borderRadius: 3, flexDirection: 'column', alignItems: 'flex-start' }} >
+          <ListItemButton sx={{  m: 0, borderRadius: 3, flexDirection: 'column', alignItems: 'flex-start' }} >
             <Stack direction="row" spacing={2} sx={{ my: 0 }}>
               <LinearScaleIcon />
               <Typography ><strong> Salman IIlyas</strong>'s birthday is today</Typography>
@@ -53,7 +49,7 @@ export default function SocialMenu() {
 
         <Box sx={{ flexDirection: 'row', display: 'flex', justifyContent: 'space-between', my: 1 }}>
           <Typography sx={{ color: 'gray', fontWeight: 900 }}>Contacts</Typography>
-          <Box sx={{ flexDirection: 'row', display: 'flex', mt: -1, mr: -1 }}>
+          <Box sx={{ flexDirection: 'row', display: 'flex', mt: -1}}>
             <IconButton><Tooltip title="New room"><VideoCameraFrontIcon /></Tooltip></IconButton>
             <IconButton><Tooltip title="Search for a name or group"><SearchOutlinedIcon /></Tooltip></IconButton>
             <IconButton><Tooltip title="Options"><LinearScaleIcon /></Tooltip></IconButton>
@@ -61,7 +57,7 @@ export default function SocialMenu() {
         </Box>
 
         {menuItems.map((item) => (
-          <ListItemButton sx={{ paddingY: 0.5, ml: -1, pl: 1, borderRadius: '15px' }}>
+          <ListItemButton sx={{  borderRadius: '15px' }}>
             <Avatar alt="Remy Sharp"
               src="/static/images/avatar/1.jpg"
               sx={{ width: 28, height: 28 }}> {item.text[0]} </Avatar>

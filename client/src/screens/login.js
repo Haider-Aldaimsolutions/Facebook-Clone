@@ -47,15 +47,17 @@ export default function Login() {
                 })
             })
             const data = await response.json()
-            console.log(data);
             if(!data.token)
                 {alert('Email or Password is Incorrect')}
             else
             {   
             alert('Welcome To Dashboard!')
             localStorage.setItem('token',data.token)
-            localStorage.setItem('userName',data.name)
+            localStorage.setItem('userName',data.firstName+' '+data.lastName)
             localStorage.setItem('profilePicture',data.profilePicture)
+            localStorage.setItem('email',data.email)
+            localStorage.setItem('createdAt',data.createdAt)
+            
             window.location.href='/'
             }
         }

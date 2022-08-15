@@ -7,7 +7,7 @@ import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import AdbIcon from '@mui/icons-material/Adb';
 
-import { AppBar, IconButton, ListItemButton, Box, Toolbar, styled, Typography, MenuItem, Menu, InputBase, Divider, CssBaseline, Link, } from '@mui/material';
+import { AppBar, IconButton, Grid, ListItemButton, Box, Toolbar, styled, Typography, MenuItem, Menu, InputBase, Divider, CssBaseline, Link, } from '@mui/material';
 import { Facebook, Instagram, Twitter, Menu as MenuImg } from "@mui/icons-material"
 import HomeIcon from '@mui/icons-material';
 import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
@@ -29,6 +29,7 @@ import LogoutIcon from '@mui/icons-material/Logout';
 
 function NavBar() {
   const [open, setOpen] = React.useState(false);
+  const [userName, setUserName] = React.useState(localStorage.getItem('userName'))
   const StyledToolbar = styled(Toolbar)({
     display: 'flex',
     justifyContent: "space-between",
@@ -68,8 +69,13 @@ function NavBar() {
     cursor: 'pointer',
     fontSize: 14,
   });
+
   function onLogout() {
     localStorage.removeItem("token");
+    localStorage.removeItem("userName");
+    localStorage.removeItem("profilePicture");
+    localStorage.removeItem("email");
+    localStorage.removeItem("createdAt");
     window.location.href = "/login";
   }
   function goToMenu() {
@@ -89,42 +95,44 @@ function NavBar() {
               <InputBase className='searchBar' placeholder="Search Facebook" sx={{ width: 130, color: "black" }} />
             </SearchBox>
           </u>
-
           <PhotoCameraIcon />
-
         </StyledToolbar>
 
-        <StyledToolbar sx={{ alignItems: { xs: 'center' }, flexDirection: { xs: 'column', md: 'row' }, justifyContent: { xs: "center", md: 'space-between' } }}>
+        <Container maxWidth="xxl" >
+          <Grid container>
+            <Grid item md={3.5}>
+              <Box className='leftNav' sx={{ display: { sm: 'none', xs: 'none', md: 'flex' } }}>
+                <FacebookRoundedIcon sx={{ color: '#1778F2', fontSize: '50px', mr: 0.5, display: { sm: 'none', xs: 'none', md: 'flex' } }} />
+                <SearchBox sx={{ backgroundColor: '#eee', borderRadius: 30, display: { sm: 'none', xs: 'none', md: 'flex' } }}>
+                  <SearchOutlinedIcon sx={{ color: 'gray', mt: 1.5, }} />
+                  <InputBase placeholder="Search Facebook" sx={{ color: "black" }} />
+                </SearchBox>
+              </Box>
+            </Grid>
 
-          <Box className='leftNav' sx={{ display: { sm: 'none', xs: 'none', md: 'flex' } }}>
-            <FacebookRoundedIcon sx={{ color: '#1778F2', fontSize: '50px', mr: 0.5, display: { sm: 'none', xs: 'none', md: 'flex' } }} />
-            <SearchBox sx={{ backgroundColor: '#eee', borderRadius: 30, display: { sm: 'none', xs: 'none', md: 'flex' } }}>
-              <SearchOutlinedIcon sx={{ color: 'gray', mt: 1.5, }} />
-              <InputBase placeholder="Search Facebook" sx={{ color: "black" }} />
-            </SearchBox>
-          </Box>
+            <Grid item xs={12} md={5} sm={8.5} sx={{ width:'100%',justifyContent: 'center',alignItems:'center', display: 'center', flexDirection: 'row' }}>
+              <Box sx={{width:'90%',justifyContent: 'space-between',justifyItems:"space-between", display: 'flex', flexDirection: 'row' }} >
+                {menuItems.map((item) => (
+                  <Box onClick={() => window.location.href = item.Link}>
+                    {item.Name}
+                  </Box>
+                ))}
+                <MenuRoundedIcon className='menuButtons' onClick={() => goToMenu()} sx={{ display: { sm: 'none' } }} />
+              </Box>
+            </Grid>
 
-          <MenuBox sx={{ gap: { xs: '4vh', sm: '7vh', md: '15vh' } }} >
-            {menuItems.map((item) => (
-              <StyledItems onClick={() => window.location.href = item.Link} >
-                <Link>{item.Name}</Link>
-              </StyledItems>
-            ))}
-            <MenuRoundedIcon className='menuButtons' onClick={() => goToMenu()} sx={{ display: { md: 'none' } }} />
-          </MenuBox>
+            <Grid item xs={3.5} sx={{ justifyContent: 'flex-end', display: 'flex', flexDirection: 'row' }}>
+              <SocialBox sx={{ display: { sm: 'flex', xs: 'none', md: 'flex' } }}>
+                {/* <IconButton><Tooltip title="Menu"><MenuRoundedIcon className='leftButtons' /></Tooltip></IconButton> */}
+                <IconButton><Tooltip title="Games"><SportsEsportsOutlinedIcon className='leftButtons' /></Tooltip></IconButton>
+                <IconButton><Tooltip title="Messenger"><SendRoundedIcon className='leftButtons' /></Tooltip></IconButton>
+                <IconButton><Tooltip title="Notifications"><NotificationsIcon className='leftButtons' /></Tooltip></IconButton>
+                <Tooltip title="Account"><Avatar className='avatar' src={localStorage.getItem('profilePicture')} onClick={() => setOpen(true)} >{localStorage.getItem('userName')[0]}</Avatar></Tooltip>
+              </SocialBox>
+            </Grid>
 
-          <SocialBox sx={{ display: { sm: 'none', xs: 'none', md: 'flex' } }}>
-            <IconButton><Tooltip title="Menu"><MenuRoundedIcon className='leftButtons' /></Tooltip></IconButton>
-            <IconButton><Tooltip title="Games"><SportsEsportsOutlinedIcon className='leftButtons' /></Tooltip></IconButton>
-            <IconButton><Tooltip title="Messenger"><SendRoundedIcon className='leftButtons' /></Tooltip></IconButton>
-            <IconButton><Tooltip title="Notifications"><NotificationsIcon className='leftButtons' /></Tooltip></IconButton>
-            <Tooltip title="Account"><Avatar className='avatar' src={localStorage.getItem('profilePicture')} onClick={() => setOpen(true)} >{localStorage.getItem('userName')[0]}</Avatar></Tooltip>
-
-            {/* <IconButton><Tooltip title="Logout"><LogoutIcon onClick={()=>onLogout() } className='leftButtons'/></Tooltip></IconButton> */}
-          </SocialBox>
-
-        </StyledToolbar>
-
+          </Grid>
+        </Container>
 
         <Menu
           id="demo-positioned-menu"
@@ -139,19 +147,19 @@ function NavBar() {
             vertical: 'top',
             horizontal: 'left',
           }}
-          sx={{ mt: 0.5, ml: -2, display: { xs: 'none', md: 'block' } }}
+          sx={{ mt: {md:0.5,sm:7},display: { xs: 'none', sm: 'block' } }}
         >
           <Box sx={{ width: 380, height: "100%", mx: 1, }}>
 
             <Box className='friendRequests'>
 
               <ListItemButton sx={{ borderRadius: 3, flexDirection: 'column', alignItems: 'flex-start' }} >
-                <Box className='profileData' sx={{ flexDirection: 'row', ml: 0.5, display: 'flex' }}>
+                <Box onClick={()=>window.location.href='/profile'} className='profileData' sx={{ flexDirection: 'row', ml: 0.5, display: 'flex' }}>
                   <Avatar alt="Remy Sharp"
-                    src="/static/images/avatar/1.jpg"
-                    className='avatar'>B
+                    src={localStorage.getItem('profilePicture')}
+                    className='avatar'>{userName[0]}
                   </Avatar>
-                  <Typography sx={{ fontWeight: 900 }}>Boota Tehseem</Typography>
+                  <Typography sx={{ fontWeight: 900 }}>{userName}</Typography>
                 </Box>
                 <Divider className='divider' />
                 <Link href="#" underline="none" sx={{ ml: 1 }}>see all profiles</Link>

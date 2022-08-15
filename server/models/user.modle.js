@@ -6,12 +6,16 @@ const User = mongoose.Schema(
         lastName: { type: String, required: true },
         email: { type: String, required: true, unique: true },
         password: { type: String, required: true },
+        friends: { type: Array},
+        friendRequests: { type: Array },
+        friendRequested: { type: Array },
         bio: { type: String },
         profilePicture: { type: String },
         coverPicture: { type: String },
-        gender: { type: String },
-        friends: { type: Array, unique: true },
-        friendRequests: { type: Array, unique: true },
+        createdAt: {
+            type: Date,
+            default: new Date()
+        },
     },
     { collection: 'Memories-Auth' }
 )

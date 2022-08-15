@@ -1,6 +1,7 @@
 import React from "react";
 import { useEffect, useState } from "react";
 import Post from "../components/Posts/Post/Post";
+import Form from '../components/Form/Form'
 import NavBar from "../components/NavBar";
 import { CircularProgress } from "@mui/material";
 import { TextField, CardMedia, Box, styled, Stack, Link, Card, ListItemButton, Avatar, Button, Modal, Grid, Model, Typography, Paper, Divider } from '@mui/material';
@@ -30,18 +31,18 @@ const style = {
 const Profile = () => {
   const [allPosts, setAllPosts] = useState();
   const [allData, setData] = useState();
-  const [picture, setPicture] = useState();
+  const [picture, setPicture] = useState(localStorage.getItem('profilePicture'));
   const [name, setName] = useState();
   const [token, setToken] = useState(localStorage.getItem('token'));
   const [open, setOpen] = React.useState(false);
   const [display, setDisplay] = useState(false);
   // const [postData, setPostData] = useState({ creator: '', title: '', message: '', tags: '', selectedFile: '' });
-  const [pictureState, setPictureState] = useState('');
+  const [pictureState, setPictureState] = useState(localStorage.getItem('profilePicture'));
   const handleOpen = () => {
-    setOpen(true);
+    setOpen(!open);
   };
   const handleClose = () => {
-    setOpen(false);
+    setOpen(!open);
   };
 
   var i = -1;
@@ -53,7 +54,8 @@ const Profile = () => {
   });
 
 
-  async function setProfilePicture() {
+  async function setProfilePicture(event) {
+    event.preventDefault();
     const response = await fetch('http://localhost:1337/api/setProfilePicture', {
       method: 'POST',
       headers: {
@@ -70,7 +72,6 @@ const Profile = () => {
       setDisplay(false)
       setPictureState('')
     }
-    console.log(data);
   };
 
 
@@ -81,7 +82,6 @@ const Profile = () => {
       },
     });
     const data = await req.json();
-    console.log(data.profile.profilePicture)
     setPicture(data.profile.profilePicture)
     setAllPosts(data.posts);
     setData(data);
@@ -101,7 +101,7 @@ const Profile = () => {
         className="media"
         sx={{
           borderRadius: { sm: 3 },
-          backgroundImage: `url(${picture})`,
+          backgroundImage: `url(${localStorage.getItem('profilePicture')})`,
           width: { md: "70%", xs: '100%' },
           height: { md: "60vh", sm: '100vh', xs: '40vh' },
           backgroundRepeat: 'no-repeat',
@@ -110,11 +110,11 @@ const Profile = () => {
           display: 'flex',
         }}
       >
-        <Avatar sx={{ height: 200, width: 200 }} src={picture}></Avatar>
-        {/* <CardMedia sx={{width:'100px',height:'100px'}}  image={picture}  />   */}
+        <Avatar sx={{ height: 200, width: 200 }} src={localStorage.getItem('profilePicture')}></Avatar>
         <PhotoCameraIcon className='menuButtons' sx={{ cursor: 'pointer', position: 'absolute', ml: 8, mt: 3 }} onClick={() => handleOpen()} />
         <Typography align='center' sx={{ my: 6, }}>{name}</Typography>
       </Centered>
+      <Form caller='profile'/>
       {/* Set Profile Pic Model */}
       <Modal
         open={open}
@@ -128,13 +128,6 @@ const Profile = () => {
             <CloseOutlinedIcon />
           </ListItemButton>
           <Divider sx={{ mt: 1 }} />
-
-          {/* <ListItemButton sx={{m:0,p:0,width:'50%'}}>
-          <Avatar alt="Remy Sharp"
-          src="/static/images/avatar/1.jpg"
-          sx={{ width: 35, height: 35 }}>H</Avatar>
-          <Typography sx={{m:0.8,p:0,color:'black',fontWeight:900}}>Haider Ali</Typography>
-        </ListItemButton>  */}
 
           <form autoComplete="off" noValidate className='root' onSubmit={setProfilePicture}>
             <Box sx={{ justifyContent: 'row', display: 'flex', mt: 1, }}>
@@ -159,33 +152,15 @@ const Profile = () => {
           ))}
         </Grid>
         : <Box className='circularProgress'> <CircularProgress /></Box>}
+        
+        <Box sx={{my:10}}>
+          <Typography align='center' color='gray' >Joined on {localStorage.getItem('createdAt')}</Typography>
+          <Typography align='center' color='gray' >Designed by Haider,</Typography>
+          <Typography align='center' color='gray' >Inspired by FaceBook </Typography>
+        </Box>
+        
     </Centered>
   );
 };
 
 export default Profile;
-
-  //     post?
-  //     <Card className="card" >
-  //     <CardMedia className='media' style={{paddingTop: '100%',}} image={post.selectedFile} title={post.title} />
-  //     <div className='overlay'>
-  //       <Typography variant="h6">{name}</Typography>
-  //       <Typography variant="body2">{moment(post.createdAt).fromNow()}</Typography>
-  //     </div>
-  //     <div className='overlay2'>
-  //       <Button style={{ color: 'white' }} size="small" onClick={() => setCurrentId(post._id)}><MoreHorizIcon fontSize="medium" /></Button>
-  //     </div>
-  //     <div className='details'>
-  //       <Typography variant="body2" color="textSecondary" component="h2">{post.tags.map((tag) => `#${tag} `)}</Typography>
-  //     </div>
-  //     <Typography className='title' gutterBottom variant="h5" component="h2">{post.title}</Typography>
-  //     <CardContent>
-  //       <Typography variant="body2" color="textSecondary" component="p">{post.message}</Typography>
-  //     </CardContent>
-  //     <CardActions className='cardActions'>
-  //       <Button size="small" color="primary" onClick={() => likePost(post._id,post.likeCount+1)}><ThumbUpIcon fontSize="small" /> Like {post.likeCount} </Button>
-  //       <Button size="small" color="primary" onClick={() => deletePost(post._id)}><DeleteIcon fontSize="small" /> Delete</Button>
-  //     </CardActions>
-  //    </Card>
-  //     :<></>
-  //   );

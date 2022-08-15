@@ -8,6 +8,7 @@
     "@material-ui/icons": "^4.11.3",
     "@mui/icons-material": "^5.8.4",
     "@mui/joy": "^5.0.0-alpha.39",
+    "@mui/lab": "^5.0.0-alpha.94",
     "@mui/material": "^5.9.3",
     "@mui/styles": "^5.9.3",
     "@testing-library/jest-dom": "^5.16.5",
@@ -19,6 +20,7 @@
     "react-file-base64": "^1.0.3",
     "react-router-dom": "^6.3.0",
     "react-scripts": "5.0.1",
+    "react-window": "^1.8.7",
     "web-vitals": "^2.1.4"
   },
   "scripts": {

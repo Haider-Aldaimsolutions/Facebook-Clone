@@ -1,7 +1,6 @@
 import React, { useState, } from 'react';
 import { Tooltip, TextField, Box, Stack, Link, Card, ListItemButton, Avatar, Button, Modal, Grid, Model, Typography, Paper, Divider } from '@mui/material';
 import FileBase from 'react-file-base64';
-import LinearScaleIcon from '@mui/icons-material/LinearScale';
 import VideoCameraFrontIcon from '@mui/icons-material/VideoCameraFront';
 import PhotoLibraryIcon from '@mui/icons-material/PhotoLibrary';
 import SentimentSatisfiedAltIcon from '@mui/icons-material/SentimentSatisfiedAlt';
@@ -51,9 +50,9 @@ function ChildModal() {
   );
 }
 
-const Form = ({ currentId = 0, setCurrentId }) => {
+const Form = ({ currentId = 0, setCurrentId,caller }) => {
   const [open, setOpen] = React.useState(false);
-  const [placeholder, setPlaceholder] = React.useState("What's on your mind, Jano " + localStorage.getItem('userName') + '?');
+  const [placeholder, setPlaceholder] = React.useState("What's on your mind, " + localStorage.getItem('userName') + '?');
   const handleOpen = () => {
     setOpen(true);
   };
@@ -93,8 +92,9 @@ const Form = ({ currentId = 0, setCurrentId }) => {
   };
 
   return (
-    <Box sx={{ alignItems: "center", display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+    <Box sx={{ alignItems: "center",my:caller=='profile'?'15px':'0%',width:caller=='profile'?{xs:'100%',sm:'80%',md:'41%'}:'100%', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
       <Card sx={{ backgroundColor: 'white', width: '100%', mb: 2, p: 1.5, borderRadius: '10px' }}>
+        
         <Box sx={{ flexDirection: 'row', display: 'flex', mb: 1.5 }}>
           <Tooltip title="Upload"><Avatar className='avatar' src={localStorage.getItem('profilePicture')} onClick={() => setOpen(true)} >{localStorage.getItem('userName')[0]}</Avatar></Tooltip>
           <Button onClick={handleOpen} className='inputBtn' sx={{ paddingRight: { md: '20%', sm: '15%', xs: '0' } }} >{placeholder}</Button>
@@ -131,7 +131,7 @@ const Form = ({ currentId = 0, setCurrentId }) => {
             <Avatar alt="Remy Sharp"
               src={localStorage.getItem('profilePicture')}
               sx={{ width: 35, height: 35 }}>{localStorage.getItem('userName')[0]}</Avatar>
-            <Typography sx={{ m: 0.8, p: 0, color: 'black', fontWeight: 900 }}>Haider Ali</Typography>
+            <Typography sx={{ m: 0.8, p: 0, color: 'black', fontWeight: 900 }}>{localStorage.getItem('userName')}</Typography>
           </ListItemButton>
 
           <form autoComplete="off" noValidate className='root' onSubmit={handleSubmit}>

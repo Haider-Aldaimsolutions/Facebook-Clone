@@ -14,7 +14,7 @@ export default function app() {
 
   return (
     <Router>
-      <Box sx={{ mb: {sm:8,xs:14} }} />
+      <Box sx={{ mb: {sm:8,xs:8} }} />
       <Routes>
         <Route exact path="/sign-up" element={<SignUP />} />
         <Route exact path="/login" element={<Login />} />
