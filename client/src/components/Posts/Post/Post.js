@@ -5,7 +5,8 @@ import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import DeleteIcon from '@mui/icons-material/Delete';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import SentimentSatisfiedAltIcon from '@mui/icons-material/SentimentSatisfiedAlt';
-import ChatBubbleIcon from '@mui/icons-material/ChatBubble';import moment from 'moment';
+import ChatBubbleIcon from '@mui/icons-material/ChatBubble';
+import moment from 'moment';
 
 const Post = ({ post, setCurrentId, name, profilePicture }) => {
   const [liked, setLiked] = useState(false);

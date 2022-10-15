@@ -128,15 +128,15 @@ app.get("/api/getPosts", async (req, res) => {
     var pictureElement = {},
     pictureCart = [];  
     
-    const user = await Post.find();
+    const user = await Post.find().sort({ _id: -1 })
     for (let index = 0; index < user.length; index++) {
       const owner = await User.findOne({
         email: user[index].email,
       });
-      nameElement.name = owner.firstName + " " + owner.lastName;
+      nameElement.name = owner?.firstName + " " + owner?.lastName;
       namesCart.push(nameElement.name);
 
-      pictureElement.profilePicture = owner.profilePicture;
+      pictureElement.profilePicture = owner?.profilePicture;
       pictureCart.push(pictureElement.profilePicture);
       
     }
@@ -378,7 +378,7 @@ app.get("/api/getAllRequests", async (req, res) => {
     const user = await User.findOne({ email: email });
     // console.log(user.friendRequests);
     let requesterProfile = [];
-    for (let index = 0; index < user.friendRequests.length; index++) {
+    for (let index = 0;  index < user.friendRequests.length; index++) {
       
       if(user.friendRequests[index]!=email){
       const profile = await User.findOne({email: user.friendRequests[index]});
