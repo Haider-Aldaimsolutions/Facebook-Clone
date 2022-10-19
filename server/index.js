@@ -5,6 +5,9 @@ import mongoose from "mongoose";
 import jwt from "jsonwebtoken";
 import Post from "./models/postMessage.js";
 import User from "./models/user.modle.js";
+import {Socket } from "socket.io";
+import { createServer } from 'http';
+import { Server } from 'socket.io'; //replaces (import socketIo from 'socket.io')
 
 const app = express();
 
@@ -13,6 +16,31 @@ app.use(bodyParser.urlencoded({ limit: "30mb", extended: true }));
 // app.use('/posts',postRoutes);
 app.use(cors());
 app.use(express.json());
+
+//socket code
+const port =1400;
+const httpServer = createServer(app);
+const io = new Server(httpServer, { cors: { origin: '*' } });
+
+
+io.on('connection', socket => {
+  console.log('a user connected');
+  
+  socket.on('disconnect', reason => {
+    console.log('user disconnected');
+  });
+
+  socket.on('send update', data => {
+    console.log(data);
+    socket.emit('recieve update', 'post added');
+    socket.broadcast.emit('recieve update', 'post added');
+  });
+
+  
+});
+
+httpServer.listen(port, () => console.log(`Listening on port ${port}`));
+
 
 // const CONNECTION_URL = 'mongodb+srv://hdrali036:abcde247@cluster0.0ye8u.mongodb.net/?retryWrites=true&w=majority';
 // mongoose.connect(CONNECTION_URL, { useNewUrlParser: true, useUnifiedTopology: true })

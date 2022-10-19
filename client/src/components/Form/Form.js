@@ -50,7 +50,7 @@ function ChildModal() {
   );
 }
 
-const Form = ({ currentId = 0, setCurrentId,caller }) => {
+const Form = ({ sendSocketIO={sendSocketIO}, refresh, setRefresh, currentId = 0, setCurrentId,caller }) => {
   const [open, setOpen] = React.useState(false);
   const [placeholder, setPlaceholder] = React.useState("What's on your mind, " + localStorage.getItem('userName') + '?');
   const handleOpen = () => {
@@ -65,7 +65,7 @@ const Form = ({ currentId = 0, setCurrentId,caller }) => {
   const [token, setToken] = useState(localStorage.getItem('token'));
 
   const clear = () => {
-    setCurrentId(0);
+    debugger
     setPostData({ creator: '', title: '', message: '', tags: '', selectedFile: '' });
   };
 
@@ -83,11 +83,12 @@ const Form = ({ currentId = 0, setCurrentId,caller }) => {
       })
     })
     const data = await response.json()
-    if (data.status === 'userRegistered') {
-
+    setRefresh(!refresh);
+    sendSocketIO();
+    // if (data.status === 'userRegistered') {
       setDisplay(false)
-      setPostData({ ...postData, creator: '', title: '', message: ',', tags: '', selectedFile: '' })
-    }
+      clear();
+    // }
     console.log(data);
   };
 

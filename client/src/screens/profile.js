@@ -4,16 +4,13 @@ import Post from "../components/Posts/Post/Post";
 import Form from '../components/Form/Form'
 import NavBar from "../components/NavBar";
 import { CircularProgress } from "@mui/material";
-import { TextField, CardMedia, Box, styled, Stack, Link, Card, ListItemButton, Avatar, Button, Modal, Grid, Model, Typography, Paper, Divider } from '@mui/material';
+import {  Box, styled,  ListItemButton, Avatar, Button, Modal, Grid,  Typography, Divider } from '@mui/material';
 import FileBase from 'react-file-base64';
-import LinearScaleIcon from '@mui/icons-material/LinearScale';
-import VideoCameraFrontIcon from '@mui/icons-material/VideoCameraFront';
 import PhotoLibraryIcon from '@mui/icons-material/PhotoLibrary';
-import SentimentSatisfiedAltIcon from '@mui/icons-material/SentimentSatisfiedAlt';
 import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined';
-import MenuRoundedIcon from '@mui/icons-material/MenuRounded';
 import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
-
+import openSocket from 'socket.io-client';
+const socket = openSocket('http://localhost:1400');
 
 const style = {
   position: 'absolute',
@@ -33,10 +30,10 @@ const Profile = () => {
   const [allData, setData] = useState();
   const [picture, setPicture] = useState(localStorage.getItem('profilePicture'));
   const [name, setName] = useState();
+  const [refresh, setRefresh] = useState(true);
   const [token, setToken] = useState(localStorage.getItem('token'));
   const [open, setOpen] = React.useState(false);
   const [display, setDisplay] = useState(false);
-  // const [postData, setPostData] = useState({ creator: '', title: '', message: '', tags: '', selectedFile: '' });
   const [pictureState, setPictureState] = useState(localStorage.getItem('profilePicture'));
   const handleOpen = () => {
     setOpen(!open);
@@ -88,10 +85,17 @@ const Profile = () => {
     setName(data.profile.firstName + " " + data.profile.lastName);
   }
 
-
   useEffect(() => {
     getProfile(localStorage.getItem("id"));
-  }, []);
+  }, [refresh]);
+
+  function sendSocketIO(){
+    socket.emit('send update', 'postAdded');
+  }
+
+  socket.on('recieve update', (newMessage)=>{
+    setRefresh(!refresh);
+  });
 
   return (
 
@@ -114,7 +118,7 @@ const Profile = () => {
         <PhotoCameraIcon className='menuButtons' sx={{ cursor: 'pointer', position: 'absolute', ml: 8, mt: 3 }} onClick={() => handleOpen()} />
         <Typography align='center' sx={{ my: 6, }}>{name}</Typography>
       </Centered>
-      <Form caller='profile'/>
+      <Form sendSocketIO={sendSocketIO} refresh={refresh} setRefresh={setRefresh} caller='profile'/>
       {/* Set Profile Pic Model */}
       <Modal
         open={open}
@@ -141,13 +145,12 @@ const Profile = () => {
       </Modal>
       {/* Ending Model */}
 
-
       {allPosts ?
         <Grid className='container' sx={{ alignItems: "center", flexDirection: 'column', justifyContent: 'center' }} container spacing={3}>
           {allPosts.map((post) => (
             i = i + 1,
             <Grid md={5} sx={{ width: { md: '100%', sm: '80%', xs: '100%' } }} key={post._id} item xs={12} sm={12} >
-              <Post post={post} name={name} />
+              <Post sendSocketIO={sendSocketIO} refresh={refresh} setRefresh={setRefresh} post={post} name={name} />
             </Grid>
           ))}
         </Grid>
